@@ -286,7 +286,7 @@ When publishing research using this tool:
 
 ```
 Data retrieved from Sketchfab via the Sketchfab Data API v3
-(https://docs.sketchfab.com/data-api/v3/)
+(https://docs.sketchfab.com/data-api/v3/index.html)
 Retrieved on [DATE] using km-sf scraper (https://github.com/yourusername/km-sf)
 ```
 
@@ -322,15 +322,66 @@ The scraper handles:
 - Network timeouts and connection errors
 - Empty result sets
 
+## 🧪 Testing
+
+The project includes a comprehensive test suite using pytest.
+
+### Running Tests
+
+```bash
+# Run all unit tests (skip integration tests that require network)
+pytest test_sketchfab_scraper.py -v -m "not integration"
+
+# Run all tests including integration tests
+pytest test_sketchfab_scraper.py -v
+
+# Run with coverage report
+pytest test_sketchfab_scraper.py --cov=sketchfab_scraper --cov-report=html
+
+# Run specific test class
+pytest test_sketchfab_scraper.py::TestSearchParameters -v
+
+# Run specific test
+pytest test_sketchfab_scraper.py::TestSearchParameters::test_category_filter -v
+```
+
+### Test Coverage
+
+The test suite includes:
+- **Initialization tests**: API token handling, rate limiting setup
+- **Rate limiting tests**: Delay verification, polite scraping behavior
+- **Search parameter tests**: All search filters and combinations
+- **API request tests**: Success, errors, retries, rate limiting
+- **Pagination tests**: Single page, multiple pages, max_results
+- **Data conversion tests**: DataFrame creation, flattening, field extraction
+- **Helper method tests**: Convenience functions, CSV export
+- **Integration tests**: Real API calls (marked with `@pytest.mark.integration`)
+
+### Test Organization
+
+Tests are organized into classes by functionality:
+- `TestInitialization`: Scraper setup and configuration
+- `TestRateLimiting`: Rate limiting behavior
+- `TestSearchParameters`: Search parameter construction
+- `TestAPIRequests`: HTTP request handling
+- `TestPagination`: Multi-page result handling
+- `TestDataConversion`: pandas DataFrame conversion
+- `TestHelperMethods`: Utility functions
+- `TestQuickSearch`: Convenience functions
+- `TestIntegration`: Real API integration tests
+
 ## 📝 Project Structure
 
 ```
 km-sf/
-├── sketchfab_scraper.py          # Main scraper module
+├── sketchfab_scraper.py               # Main scraper module
 ├── sketchfab_heritage_analysis.ipynb  # Google Colab notebook
-├── requirements.txt               # Python dependencies
-├── README.md                      # This file
-└── examples/                      # Example scripts (future)
+├── example_usage.py                   # Standalone example script
+├── test_sketchfab_scraper.py          # Comprehensive test suite
+├── requirements.txt                   # Python dependencies
+├── pytest.ini                         # Pytest configuration
+├── README.md                          # This file
+└── examples/                          # Example scripts (future)
 ```
 
 ## 🤝 Contributing
@@ -353,7 +404,7 @@ This tool is provided for research purposes. Please respect:
 
 ## 🔗 Resources
 
-- **Sketchfab Data API Documentation**: https://docs.sketchfab.com/data-api/v3/
+- **Sketchfab Data API Documentation**: https://docs.sketchfab.com/data-api/v3/index.html
 - **Sketchfab Developer Portal**: https://sketchfab.com/developers
 - **Cultural Heritage Category**: https://sketchfab.com/3d-models/cultural-heritage-history
 - **API Token Settings**: https://sketchfab.com/settings/password

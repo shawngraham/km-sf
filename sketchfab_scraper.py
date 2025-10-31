@@ -7,7 +7,7 @@ pandas DataFrame conversion for data analysis.
 
 Author: Research Tool
 Date: 2025-10-31
-API Documentation: https://docs.sketchfab.com/data-api/v3/
+API Documentation: https://docs.sketchfab.com/data-api/v3/index.html
 """
 
 import time
@@ -120,6 +120,10 @@ class SketchfabScraper:
         max_face_count: Optional[int] = None,
         min_face_count: Optional[int] = None,
         sort_by: str = '-relevance',
+        staff_picked: Optional[bool] = None,
+        rigged: Optional[bool] = None,
+        sound: Optional[bool] = None,
+        pbr: Optional[bool] = None,
         max_results: Optional[int] = None,
         **kwargs
     ) -> List[Dict]:
@@ -139,8 +143,12 @@ class SketchfabScraper:
             sort_by: Sort order. Options:
                     '-relevance' (default), '-likeCount', '-viewCount',
                     '-publishedAt', 'publishedAt', '-createdAt', 'createdAt'
+            staff_picked: Filter by staff-picked models
+            rigged: Filter by rigged models (with skeletal animation)
+            sound: Filter by models with sound
+            pbr: Filter by models with PBR (Physically Based Rendering) materials
             max_results: Maximum number of results to retrieve (None = all available)
-            **kwargs: Additional search parameters
+            **kwargs: Additional search parameters (e.g., user, archives, collections)
 
         Returns:
             List of model dictionaries
@@ -179,6 +187,18 @@ class SketchfabScraper:
 
         if min_face_count:
             params['min_face_count'] = min_face_count
+
+        if staff_picked is not None:
+            params['staff_picked'] = str(staff_picked).lower()
+
+        if rigged is not None:
+            params['rigged'] = str(rigged).lower()
+
+        if sound is not None:
+            params['sound'] = str(sound).lower()
+
+        if pbr is not None:
+            params['pbr'] = str(pbr).lower()
 
         # Add any additional parameters
         params.update(kwargs)
