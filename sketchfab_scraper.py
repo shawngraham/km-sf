@@ -1,12 +1,12 @@
 """
-Sketchfab Data API Scraper for Cultural Heritage Models - COMPLETE VERSION
+Sketchfab Data API Scraper for Cultural Heritage Models 
 
 This module provides a comprehensive API client for retrieving ALL available data
 from Sketchfab's Data API v3, including comments and every documented field.
 
-Author: Research Tool
+Author: Shawn Graham, and Claude Research Tool
 Date: 2025-10-31
-API Documentation: https://docs.sketchfab.com/data-api/v3/
+API Documentation: https://docs.sketchfab.com/data-api/v3/ 
 """
 
 import time
