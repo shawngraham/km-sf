@@ -4,9 +4,9 @@ Sketchfab Data API Scraper for Cultural Heritage Models
 This module provides a comprehensive API client for retrieving ALL available data
 from Sketchfab's Data API v3, including comments and every documented field.
 
-Author: Shawn Graham, and Claude Research Tool
+Author: SG w/ Claude Assistance
 Date: 2025-10-31
-API Documentation: https://docs.sketchfab.com/data-api/v3/ 
+API Documentation: https://docs.sketchfab.com/data-api/v3/
 """
 
 import time
@@ -664,9 +664,127 @@ class SketchfabScraper:
                 flat_comment['author_displayName'] = author.get('displayName', '')
                 flat_comment['author_profileUrl'] = author.get('profileUrl', '')
             
+            # Model context (if added)
+            flat_comment['model_uid'] = comment.get('model_uid', '')
+            flat_comment['model_name'] = comment.get('model_name', '')
+            
             flattened_comments.append(flat_comment)
         
         return pd.DataFrame(flattened_comments)
+
+    def extract_comments_from_models(
+        self,
+        enriched_models: List[Dict],
+        include_model_fields: Optional[List[str]] = None
+    ) -> pd.DataFrame:
+        """
+        Extract all comments from enriched models into a single DataFrame.
+        Perfect for text analysis - returns one row per comment with model context.
+
+        Args:
+            enriched_models: List of model dictionaries that include comments
+            include_model_fields: Optional list of additional model fields to include
+                                 (e.g., ['user_username', 'viewCount', 'likeCount'])
+
+        Returns:
+            pandas DataFrame with one row per comment, including model context
+        """
+        all_comments = []
+        
+        logger.info(f"Extracting comments from {len(enriched_models)} models")
+        
+        for model in enriched_models:
+            if 'comments' not in model or not model['comments']:
+                continue
+            
+            model_uid = model.get('uid', '')
+            model_name = model.get('name', '')
+            
+            # Extract specified model fields
+            model_context = {
+                'model_uid': model_uid,
+                'model_name': model_name,
+            }
+            
+            if include_model_fields:
+                for field in include_model_fields:
+                    # Handle nested fields like user.username
+                    if '.' in field:
+                        parts = field.split('.')
+                        value = model
+                        for part in parts:
+                            value = value.get(part, {}) if isinstance(value, dict) else None
+                        model_context[f'model_{field.replace(".", "_")}'] = value
+                    else:
+                        model_context[f'model_{field}'] = model.get(field, '')
+            
+            # Add model context to each comment
+            for comment in model['comments']:
+                # Merge comment with model context
+                comment_with_context = {**comment, **model_context}
+                all_comments.append(comment_with_context)
+        
+        logger.info(f"Extracted {len(all_comments)} comments from {len([m for m in enriched_models if 'comments' in m and m['comments']])} models")
+        
+        return self.comments_to_dataframe(all_comments)
+
+    def search_and_extract_comments(
+        self,
+        query: str = "",
+        categories: Optional[Union[str, List[str]]] = None,
+        max_results: Optional[int] = None,
+        include_model_fields: Optional[List[str]] = None,
+        **kwargs
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Convenience function: search models and extract comments in one call.
+        Returns both models DataFrame and comments DataFrame.
+
+        Args:
+            query: Search query
+            categories: Category filter (default: cultural-heritage-history if query provided)
+            max_results: Maximum number of models to search
+            include_model_fields: Additional model fields to include with each comment
+            **kwargs: Additional search parameters
+
+        Returns:
+            Tuple of (models_df, comments_df)
+        """
+        logger.info(f"Searching models and extracting comments for query: '{query}'")
+        
+        # Search models
+        if categories is None and query:
+            categories = 'cultural-heritage-history'
+        
+        models = self.search_models(
+            query=query,
+            categories=categories,
+            max_results=max_results,
+            **kwargs
+        )
+        
+        logger.info(f"Found {len(models)} models, enriching with comments...")
+        
+        # Enrich with comments
+        enriched_models = self.enrich_search_results(
+            models,
+            include_full_details=False,
+            include_comments=True,
+            max_models=max_results
+        )
+        
+        # Extract comments
+        comments_df = self.extract_comments_from_models(
+            enriched_models,
+            include_model_fields=include_model_fields
+        )
+        
+        # Create models DataFrame
+        models_df = self.to_dataframe(enriched_models, comprehensive=True)
+        
+        logger.info(f"Complete: {len(models_df)} models, {len(comments_df)} comments")
+        
+        return models_df, comments_df
 
     def search_cultural_heritage(
         self,
