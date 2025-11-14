@@ -1,11 +1,17 @@
 # Sketchfab Cultural Heritage Scrapers
 
-A polite, research-focused Python toolkit for retrieving cultural heritage 3D model data from Sketchfab. Includes both an API-based scraper and a web scraper for comprehensive data collection. Designed for discourse analysis and scholarly examination of how modelers represent and describe cultural heritage in digital 3D spaces.
+A polite, research-focused Python toolkit for retrieving cultural heritage 3D model data from Sketchfab via the official API. Designed for discourse analysis and scholarly examination of how modelers represent and describe cultural heritage in digital 3D spaces.
 
-## Two Complementary Scrapers
+## Important Notes
 
-1. **API Scraper** (`sketchfab_scraper.py`) - Fast, structured data from Sketchfab's official API
-2. **Web Scraper** (`sketchfab_web_scraper.py`) - Collects metadata directly from search result pages using Beautiful Soup
+⚠️ **Rate Limits**: Sketchfab's API has undocumented rate limits that can interrupt large collections. See [DEALING_WITH_RATE_LIMITS.md](DEALING_WITH_RATE_LIMITS.md) for strategies.
+
+⚠️ **Web Scraping**: Direct web scraping is blocked by Sketchfab (returns 403). See [WEB_SCRAPING_FINDINGS.md](WEB_SCRAPING_FINDINGS.md) for details.
+
+## Scrapers Available
+
+1. **API Scraper** (`sketchfab_scraper.py`) - Standard API access with comprehensive field coverage
+2. **Enhanced API Scraper** (`sketchfab_scraper_enhanced.py`) - **RECOMMENDED** - Adds rate limit handling, checkpointing, and exponential backoff
 
 ## Purpose
 
@@ -30,13 +36,13 @@ cd km-sf
 pip install -r requirements.txt
 ```
 
-### Basic Usage
+### Basic Usage (Standard Scraper)
 
 ```python
 from sketchfab_scraper import SketchfabScraper
 
 # Initialize
-scraper = SketchfabScraper()
+scraper = SketchfabScraper(rate_limit_delay=2.0)
 
 # Search cultural heritage models
 df = scraper.search_cultural_heritage("roman temple", max_results=50)
@@ -44,6 +50,39 @@ df = scraper.search_cultural_heritage("roman temple", max_results=50)
 # View results
 print(df[['name', 'user_username', 'viewCount', 'faceCount', 'license_label']])
 ```
+
+### Recommended Usage (Enhanced Scraper for Large Collections)
+
+```python
+from sketchfab_scraper_enhanced import EnhancedSketchfabScraper
+
+# Initialize with checkpointing
+scraper = EnhancedSketchfabScraper(
+    api_token="your_token_here",  # Highly recommended!
+    rate_limit_delay=3.0,  # Conservative delay
+    checkpoint_file="my_collection.json"
+)
+
+# Collect with automatic checkpointing
+try:
+    results = scraper.search_models_with_checkpoints(
+        query="roman",
+        categories="cultural-heritage-history",
+        max_results=1000,
+        checkpoint_every=100
+    )
+
+    scraper.print_stats()
+
+except RateLimitError:
+    print("Rate limited - progress saved. Resume later!")
+```
+
+**Why use the enhanced scraper?**
+- Handles rate limits gracefully with exponential backoff
+- Saves progress automatically (resume if interrupted)
+- Transparent logging and statistics
+- More reliable for large collections
 
 ### Get Comments
 
@@ -170,72 +209,22 @@ print(org_models.groupby('org_displayName').size())
 
 This scraper should capture **ALL** fields documented in the [Swagger API](https://docs.sketchfab.com/data-api/v3/index.html).
 
-## Web Scraper Usage
+## Dealing with Rate Limits
 
-The web scraper complements the API scraper by directly parsing search result pages, which can capture information that might be displayed on the web interface but not available through the API.
+Sketchfab's API has **opaque rate limits** that are not well-documented. For large-scale data collection:
 
-### Basic Web Scraping
+1. **Use the Enhanced Scraper** - `sketchfab_scraper_enhanced.py` handles rate limits automatically
+2. **Use an API Token** - Authenticated requests have higher limits
+3. **Enable Checkpointing** - Resume if interrupted
+4. **Be Patient** - Use conservative delays (3s+ between requests)
 
-```python
-from sketchfab_web_scraper import SketchfabWebScraper
+**See [DEALING_WITH_RATE_LIMITS.md](DEALING_WITH_RATE_LIMITS.md) for detailed strategies and examples.**
 
-# Initialize
-scraper = SketchfabWebScraper(rate_limit_delay=2.0)
+## About Web Scraping
 
-# Scrape search results
-models = scraper.scrape_search(
-    query="roman",
-    max_pages=5,      # Limit pages to scrape
-    max_models=100    # Or limit total models
-)
+**Note:** Direct web scraping of Sketchfab search pages does not work - they return 403 Forbidden for automated requests. The API provides more comprehensive data anyway.
 
-# Save to JSON
-scraper.save_to_json(models, "roman_models_web_scrape.json")
-```
-
-### What the Web Scraper Collects
-
-For each model found in search results:
-- Title and URL
-- Author name and profile URL
-- Thumbnail URL
-- Description/snippet
-- Statistics (views, likes, comments)
-- Badges and tags
-- License information (if visible)
-- Model IDs from data attributes
-- **All visible text** from the model card (stored in `all_text` field)
-
-### Web Scraper vs API Scraper
-
-| Feature | API Scraper | Web Scraper |
-|---------|------------|-------------|
-| Speed | Fast | Slower (needs HTML parsing) |
-| Data Structure | Highly structured | Semi-structured |
-| Pagination | Automatic | Page-by-page |
-| Rate Limits | API-enforced | Polite delays |
-| Best For | Bulk metadata collection | Complementary data, visual elements |
-| Authentication | Optional API token | None needed |
-
-### Combined Approach
-
-For comprehensive data collection:
-
-```python
-from sketchfab_scraper import SketchfabScraper
-from sketchfab_web_scraper import SketchfabWebScraper
-
-# 1. Use API scraper for structured metadata
-api_scraper = SketchfabScraper()
-api_data = api_scraper.search_cultural_heritage("roman", max_results=100)
-
-# 2. Use web scraper for additional context
-web_scraper = SketchfabWebScraper(rate_limit_delay=2.0)
-web_data = web_scraper.scrape_search("roman", max_pages=5)
-
-# 3. Cross-reference and merge data as needed
-# (Models can be matched by URL or title)
-```
+**See [WEB_SCRAPING_FINDINGS.md](WEB_SCRAPING_FINDINGS.md) for technical details.**
 
 ## API Token (Optional)
 
