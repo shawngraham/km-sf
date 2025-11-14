@@ -301,6 +301,47 @@ class EnhancedSketchfabScraper:
 
         return checkpoint.get('data', [])
 
+    @staticmethod
+    def load_json_data(filepath: str) -> List[Dict]:
+        """
+        Load model data from JSON file, handling both checkpoint and direct formats.
+
+        This utility handles two formats:
+        1. Checkpoint format: {'data': [...], 'timestamp': ..., 'stats': ...}
+        2. Direct list format: [...]
+
+        Args:
+            filepath: Path to JSON file
+
+        Returns:
+            List of model dictionaries
+
+        Example:
+            models = EnhancedSketchfabScraper.load_json_data("my_data.json")
+            scraper = SketchfabScraper()
+            df = scraper.to_dataframe(models, comprehensive=True)
+        """
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Handle checkpoint format
+        if isinstance(data, dict) and 'data' in data:
+            logger.info(f"Loaded checkpoint format: {len(data['data'])} models")
+            if 'timestamp' in data:
+                logger.info(f"  Checkpoint created: {data['timestamp']}")
+            return data['data']
+
+        # Handle direct list format
+        elif isinstance(data, list):
+            logger.info(f"Loaded direct format: {len(data)} models")
+            return data
+
+        else:
+            raise ValueError(
+                f"Unexpected JSON format. Expected checkpoint dict with 'data' key or list, "
+                f"got {type(data)}"
+            )
+
     def search_models_with_checkpoints(
         self,
         query: str = "",

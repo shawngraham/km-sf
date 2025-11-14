@@ -223,11 +223,11 @@ for query in queries:
 ### Task 2: Analyze Descriptions and Tags
 
 ```python
+from sketchfab_scraper_enhanced import EnhancedSketchfabScraper
 from sketchfab_scraper import SketchfabScraper
 
-# Load collected data
-with open("roman_architecture.json", 'r') as f:
-    models = json.load(f)
+# Load collected data (handles both checkpoint and direct list formats)
+models = EnhancedSketchfabScraper.load_json_data("roman_architecture.json")
 
 base = SketchfabScraper()
 df = base.to_dataframe(models, comprehensive=True)
