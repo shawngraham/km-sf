@@ -45,12 +45,12 @@ Sketchfab is actively blocking web scraping attempts. This is likely because:
 ### Use the Official API (Already Implemented!)
 
 **You already have a comprehensive API scraper** (`sketchfab_scraper.py`) that:
-- ✅ Works perfectly and is officially supported
-- ✅ Collects 85+ fields of structured data
-- ✅ Includes pagination, comments, all metadata
-- ✅ Respects rate limits properly
-- ✅ Complies with Sketchfab's Terms of Service
-- ✅ More reliable and maintainable
+- Works perfectly and is officially supported
+- Collects 85+ fields of structured data
+- Includes pagination, comments, all metadata
+- Respects rate limits properly
+- Complies with Sketchfab's Terms of Service
+- More reliable and maintainable
 
 **The API provides MORE data than web scraping would:**
 - Complete model metadata

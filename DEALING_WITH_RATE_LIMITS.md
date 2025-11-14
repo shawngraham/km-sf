@@ -186,14 +186,14 @@ def collect_large_dataset(query, target_count=5000):
             new_results = [m for m in results if m['uid'] not in existing_uids]
             results = existing + new_results
 
-        print(f"\n✓ SUCCESS: Collected {len(results)} models")
+        print(f"\nSUCCESS: Collected {len(results)} models")
 
         # Save final dataset
         final_path = f"final_{query.replace(' ', '_')}_{len(results)}_models.json"
         with open(final_path, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ Saved to: {final_path}")
+        print(f"Saved to: {final_path}")
 
         # Print statistics
         scraper.print_stats()
@@ -201,7 +201,7 @@ def collect_large_dataset(query, target_count=5000):
         return results
 
     except RateLimitError as e:
-        print(f"\n✗ Rate limited: {e}")
+        print(f"\nRate limited: {e}")
         print("\nWhat to do:")
         print("1. Wait 1-2 hours")
         print("2. Run this script again (will resume from checkpoint)")
@@ -219,9 +219,9 @@ if __name__ == "__main__":
     results = collect_large_dataset("roman", target_count=5000)
 
     if results:
-        print(f"\n🎉 Collection complete!")
+        print(f"\nCollection complete!")
     else:
-        print(f"\n⏸️  Paused - resume later")
+        print(f"\nPaused - resume later")
 ```
 
 ## Recommended Workflow
@@ -254,21 +254,21 @@ These are **estimates** - actual limits vary and change.
 
 ## What NOT to Do
 
-❌ Set `rate_limit_delay` below 1.0s
-❌ Disable retries
-❌ Ignore checkpoints
-❌ Try to parallelize requests
-❌ Use multiple API tokens (likely ToS violation)
+- Do NOT set `rate_limit_delay` below 1.0s
+- Do NOT disable retries
+- Do NOT ignore checkpoints
+- Do NOT try to parallelize requests
+- Do NOT use multiple API tokens (likely ToS violation)
 
 ## What TO Do
 
-✅ Use the enhanced scraper
-✅ Start with conservative delays (3s+)
-✅ Always use checkpointing
-✅ Monitor statistics
-✅ Be patient
-✅ Use an API token
-✅ Collect during off-peak hours if possible
+- DO use the enhanced scraper
+- DO start with conservative delays (3s+)
+- DO always use checkpointing
+- DO monitor statistics
+- DO be patient
+- DO use an API token
+- DO collect during off-peak hours if possible
 
 ## Questions?
 

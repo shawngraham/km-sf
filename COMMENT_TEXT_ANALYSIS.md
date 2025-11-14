@@ -136,7 +136,7 @@ print(comments_df[['model_name', 'author_username', 'body']].head())
 models_df.to_csv('models.csv', index=False)
 comments_df.to_csv('comments_for_text_analysis.csv', index=False)
 
-print("\n✓ Exported to:")
+print("\nExported to:")
 print("  - models.csv")
 print("  - comments_for_text_analysis.csv")
 ```

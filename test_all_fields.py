@@ -27,12 +27,12 @@ def test_basic_search():
     
     # Check for key field categories
     print(f"\n Field Categories Present:")
-    print(f"  Core fields: ✓")
-    print(f"  User fields: {'✓' if 'user_username' in df.columns else '✗'}")
-    print(f"  License fields: {'✓' if 'license_label' in df.columns else '✗'}")
-    print(f"  Archive fields: {'✓' if 'archive_gltf_size' in df.columns else '✗'}")
-    print(f"  Org fields: {'✓' if 'org_uid' in df.columns else '✗'}")
-    print(f"  Comments: {'✓' if 'has_fetched_comments' in df.columns else '✗ (separate endpoint)'}")
+    print(f"  Core fields: YES")
+    print(f"  User fields: {'YES' if 'user_username' in df.columns else 'NO'}")
+    print(f"  License fields: {'YES' if 'license_label' in df.columns else 'NO'}")
+    print(f"  Archive fields: {'YES' if 'archive_gltf_size' in df.columns else 'NO'}")
+    print(f"  Org fields: {'YES' if 'org_uid' in df.columns else 'NO'}")
+    print(f"  Comments: {'YES' if 'has_fetched_comments' in df.columns else 'NO (separate endpoint)'}")
     
     return df
 
@@ -55,13 +55,13 @@ def test_with_enrichment():
     print(df.columns.tolist())
     
     print(f"\nField Categories Present:")
-    print(f"  Core fields: ✓")
-    print(f"  User fields: {'✓' if 'user_username' in df.columns else '✗'}")
-    print(f"  License fields: {'✓' if 'license_label' in df.columns else '✗'}")
-    print(f"  Archive fields: {'✓' if 'archive_gltf_size' in df.columns else '✗'}")
-    print(f"  Status fields: {'✓' if 'status_processing' in df.columns else '✗'}")
-    print(f"  Options fields: {'✓' if 'options_shadeless' in df.columns else '✗'}")
-    print(f"  Collection fields: {'✓' if 'collection_count' in df.columns else '✗'}")
+    print(f"  Core fields: YES")
+    print(f"  User fields: {'YES' if 'user_username' in df.columns else 'NO'}")
+    print(f"  License fields: {'YES' if 'license_label' in df.columns else 'NO'}")
+    print(f"  Archive fields: {'YES' if 'archive_gltf_size' in df.columns else 'NO'}")
+    print(f"  Status fields: {'YES' if 'status_processing' in df.columns else 'NO'}")
+    print(f"  Options fields: {'YES' if 'options_shadeless' in df.columns else 'NO'}")
+    print(f"  Collection fields: {'YES' if 'collection_count' in df.columns else 'NO'}")
     
     return df
 
@@ -135,7 +135,7 @@ def test_with_comments_enrichment():
     # Check for comment-related fields
     has_comment_fields = 'has_fetched_comments' in df.columns
     
-    print(f"\nComment fields added: {'✓' if has_comment_fields else '✗'}")
+    print(f"\nComment fields added: {'YES' if has_comment_fields else 'NO'}")
     
     if has_comment_fields:
         print(f"\nComment summary:")
