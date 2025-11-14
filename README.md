@@ -1,6 +1,11 @@
-# Sketchfab Cultural Heritage API Scraper
+# Sketchfab Cultural Heritage Scrapers
 
-A polite, research-focused Python tool for retrieving cultural heritage 3D model data from the Sketchfab Data API v3. Designed for discourse analysis and scholarly examination of how modelers represent and describe cultural heritage in digital 3D spaces.
+A polite, research-focused Python toolkit for retrieving cultural heritage 3D model data from Sketchfab. Includes both an API-based scraper and a web scraper for comprehensive data collection. Designed for discourse analysis and scholarly examination of how modelers represent and describe cultural heritage in digital 3D spaces.
+
+## Two Complementary Scrapers
+
+1. **API Scraper** (`sketchfab_scraper.py`) - Fast, structured data from Sketchfab's official API
+2. **Web Scraper** (`sketchfab_web_scraper.py`) - Collects metadata directly from search result pages using Beautiful Soup
 
 ## Purpose
 
@@ -163,7 +168,74 @@ print(f"Institutional models: {len(org_models)}")
 print(org_models.groupby('org_displayName').size())
 ```
 
-This scraper should capture **ALL** fields documented in the [Swagger API](https://docs.sketchfab.com/data-api/v3/index.html),
+This scraper should capture **ALL** fields documented in the [Swagger API](https://docs.sketchfab.com/data-api/v3/index.html).
+
+## Web Scraper Usage
+
+The web scraper complements the API scraper by directly parsing search result pages, which can capture information that might be displayed on the web interface but not available through the API.
+
+### Basic Web Scraping
+
+```python
+from sketchfab_web_scraper import SketchfabWebScraper
+
+# Initialize
+scraper = SketchfabWebScraper(rate_limit_delay=2.0)
+
+# Scrape search results
+models = scraper.scrape_search(
+    query="roman",
+    max_pages=5,      # Limit pages to scrape
+    max_models=100    # Or limit total models
+)
+
+# Save to JSON
+scraper.save_to_json(models, "roman_models_web_scrape.json")
+```
+
+### What the Web Scraper Collects
+
+For each model found in search results:
+- Title and URL
+- Author name and profile URL
+- Thumbnail URL
+- Description/snippet
+- Statistics (views, likes, comments)
+- Badges and tags
+- License information (if visible)
+- Model IDs from data attributes
+- **All visible text** from the model card (stored in `all_text` field)
+
+### Web Scraper vs API Scraper
+
+| Feature | API Scraper | Web Scraper |
+|---------|------------|-------------|
+| Speed | Fast | Slower (needs HTML parsing) |
+| Data Structure | Highly structured | Semi-structured |
+| Pagination | Automatic | Page-by-page |
+| Rate Limits | API-enforced | Polite delays |
+| Best For | Bulk metadata collection | Complementary data, visual elements |
+| Authentication | Optional API token | None needed |
+
+### Combined Approach
+
+For comprehensive data collection:
+
+```python
+from sketchfab_scraper import SketchfabScraper
+from sketchfab_web_scraper import SketchfabWebScraper
+
+# 1. Use API scraper for structured metadata
+api_scraper = SketchfabScraper()
+api_data = api_scraper.search_cultural_heritage("roman", max_results=100)
+
+# 2. Use web scraper for additional context
+web_scraper = SketchfabWebScraper(rate_limit_delay=2.0)
+web_data = web_scraper.scrape_search("roman", max_pages=5)
+
+# 3. Cross-reference and merge data as needed
+# (Models can be matched by URL or title)
+```
 
 ## API Token (Optional)
 
