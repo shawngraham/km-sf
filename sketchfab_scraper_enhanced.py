@@ -276,7 +276,7 @@ class EnhancedSketchfabScraper:
         with open(checkpoint_path, 'w', encoding='utf-8') as f:
             json.dump(checkpoint, f, indent=2, ensure_ascii=False)
 
-        logger.info(f"✓ Checkpoint saved: {checkpoint_path} ({len(data)} items)")
+        logger.info(f"Checkpoint saved: {checkpoint_path} ({len(data)} items)")
         return checkpoint_path
 
     def load_checkpoint(self, checkpoint_path: str) -> List[Dict]:
@@ -296,7 +296,7 @@ class EnhancedSketchfabScraper:
         with open(checkpoint_path, 'r', encoding='utf-8') as f:
             checkpoint = json.load(f)
 
-        logger.info(f"✓ Loaded checkpoint: {len(checkpoint.get('data', []))} items")
+        logger.info(f"Loaded checkpoint: {len(checkpoint.get('data', []))} items")
         logger.info(f"  From: {checkpoint.get('timestamp')}")
 
         return checkpoint.get('data', [])
@@ -392,13 +392,13 @@ def main():
             checkpoint_every=25
         )
 
-        print(f"\n✓ Collected {len(results)} models")
+        print(f"\nCollected {len(results)} models")
 
         # Print statistics
         scraper.print_stats()
 
     except RateLimitError as e:
-        print(f"\n✗ Rate limit error: {e}")
+        print(f"\nRate limit error: {e}")
         print("Resume by loading the checkpoint and continuing")
         scraper.print_stats()
 

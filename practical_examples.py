@@ -95,7 +95,7 @@ def example_2_texture_resolution():
         print(f"  Low (<2K): {low_res.sum()} models")
     
     scraper.export_to_csv(df, 'texture_resolution_analysis.csv')
-    print("\n✓ Saved to: texture_resolution_analysis.csv")
+    print("\nSaved to: texture_resolution_analysis.csv")
     
     return df
 
@@ -140,7 +140,7 @@ def example_3_pbr_analysis():
     print(f"  Non-PBR: {df['pbrType'].isna().sum()}")
     
     scraper.export_to_csv(df, 'pbr_analysis.csv')
-    print("\n✓ Saved to: pbr_analysis.csv")
+    print("\nSaved to: pbr_analysis.csv")
     
     return df
 
@@ -200,7 +200,7 @@ def example_4_comments_analysis():
             print(f"  {comment['body'][:100]}...")
         
         scraper.export_to_csv(comments_df, 'comments_analysis.csv')
-        print("\n✓ Saved to: comments_analysis.csv")
+        print("\nSaved to: comments_analysis.csv")
         
         return comments_df
     else:
@@ -246,7 +246,7 @@ def example_5_organization_research():
             print(org_models['visibility'].value_counts())
         
         scraper.export_to_csv(org_models, 'organization_models.csv')
-        print("\n✓ Saved to: organization_models.csv")
+        print("\nSaved to: organization_models.csv")
         
         return org_models
     else:
@@ -306,8 +306,8 @@ def example_6_complete_dataset():
     # Save both formats
     scraper.export_to_csv(complete_df, 'complete_dataset.csv')
     scraper.export_complete_data_to_json(enriched, 'complete_dataset.json')
-    
-    print("\n✓ Saved to:")
+
+    print("\nSaved to:")
     print("  - complete_dataset.csv (tabular)")
     print("  - complete_dataset.json (nested, preserves all structures)")
     
@@ -372,8 +372,8 @@ def main():
     print("  5. Organization Research (NEW!)")
     print("  6. Complete Dataset (ALL 85+ fields)")
     print("  7. Processing Status Analysis (NEW!)")
-    
-    print("\n⚠️  Note: Examples 2-7 require additional API calls and will be slower.")
+
+    print("\nNote: Examples 2-7 require additional API calls and will be slower.")
     
     response = input("\nRun all examples? (y/n): ")
     
@@ -420,9 +420,9 @@ def main():
         if 'complete' in results:
             print("  - complete_dataset.csv")
             print("  - complete_dataset.json")
-        
-        print("\n🎉 You now have comprehensive Sketchfab data!")
-        print("   Adapt these examples for your research needs.")
+
+        print("\nYou now have comprehensive Sketchfab data!")
+        print("Adapt these examples for your research needs.")
         
     except KeyboardInterrupt:
         print("\n\nExamples interrupted by user.")
